@@ -1,14 +1,18 @@
 services:
   mc-server:
+    image: ${IMAGE_NAME}:${MC_VERSION}
+    pull_policy: never
     build:
+      target: minecraft-server
       args:
         - JAVA_VERSION=${JAVA_VERSION}
+        - SERVER_LINK=${SERVER_LINK}
         - UNAME=${USER}
         - GNAME=${USER}
     stdin_open: true
-    env_file: .env
     volumes:
       - ./out:/home/${USER}/
     tty: true
     ports:
       - "25565:25565"
+    command: java -Xmx1024M -Xms1024M -jar /home/server.jar --nogui
