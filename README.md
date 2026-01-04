@@ -26,7 +26,7 @@ Setup includes the following:
   - Enter command `stop` in the server CLI to close the server. Recommended for graceful exit.
   - You can alternatively use `Ctrl-C` but generally not recommended.
 - You can then `make up` later if you want to start the server up again.
-- JVM arguments can be set in `docker-compose.yaml` file in the `commands:` line.
+- JVM arguments can be set in `docker-compose.yaml` file in the `command:` line.
 - The server files will be populated in the `out` folder so that users can access them and backup anytime.
 - `make server` is only needed when you want to host a different version or initial setup.
 - If you want to always have a clean server setup, run `make new-server [MC version]`
@@ -56,7 +56,8 @@ There is a build stage where only the JRE environment is made without downloadin
 You can start up an instance by going to the existing `docker-compose.yaml` and change the following:
 - Change the `target` value in `build` from `minecraft-server` to `env-base`.
 - Change the `command` in `mc-server` to `sleep infinity` if you want to keep the environment up for testing purposes.
-- Place the server JAR file in this directory and uncomment the `server.jar` bind so the image can use the JAR.
+- Place the server JAR file in this directory. Recommended to rename the JAR file to `server.jar`.
+- Uncomment the volume bind for the server JAR in the yaml file.
 - Run `make server [MC Version]` as usual.
 
 Disclaimer: Modded servers are not guaranteed to work with this setup as they may need extra JRE modules.
