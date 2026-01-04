@@ -1,0 +1,24 @@
+name: Feature Request
+description: Suggest an idea for this project or request a change or missing feature.
+title: "[FEAT] - "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "# Describe the feature."
+      placeholder: A clear description of what you want added to the implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: solutions
+    attributes:
+      label: "# Potential solution(s)"
+      placeholder: Suggestion on ideas or existing implementations that can add the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "# Additional Context"
+      placeholder: Add any other context that can help with why you want this feature.
