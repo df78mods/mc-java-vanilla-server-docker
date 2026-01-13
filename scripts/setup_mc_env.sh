@@ -1,12 +1,5 @@
 #!/bin/bash
 
-jqExists=$(which jq)
-
-if [[ "$jqExists" == "" ]]; then
-	echo "jq is required for the script to work, please install \"jq\" to use."
-	exit 1
-fi
-
 usage()
 {
 cat << EOF
@@ -24,6 +17,7 @@ EOF
 MC_VERSION=
 IMAGE_NAME=
 JAVA_VERSION=8
+CSV_SEP='|'
 
 while (( $# )); do
 	case "$1" in
@@ -34,15 +28,15 @@ while (( $# )); do
 	esac
 done
 
-MCMETADATA=$(cat available_versions.json | jq -e ".\"$MC_VERSION\"")
+MCMETADATA=$(tail -n +2 available_versions.csv | grep -m 1 "^${MC_VERSION//./\\\.}$CSV_SEP")
 
 if [[ $? -ne 0 ]]; then
 	echo "Argument '$MC_VERSION' is NOT a valid version number. Please try a different version."
 	exit 1
 fi
 
-JAVA_VERSION=$(echo $MCMETADATA | jq ".javaVersion")
-SERVER_LINK=$(echo $MCMETADATA | jq ".url")
+JAVA_VERSION=$(echo $MCMETADATA | awk -F"$CSV_SEP" '{print $3}')
+SERVER_LINK=$(echo $MCMETADATA | awk -F"$CSV_SEP" '{print $2}')
 
 echo "JAVA_VERSION=$JAVA_VERSION" > .env
 echo "IMAGE_NAME=$IMAGE_NAME" >> .env
