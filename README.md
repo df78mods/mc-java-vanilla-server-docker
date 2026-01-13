@@ -12,7 +12,6 @@ Setup includes the following:
 - [Docker](https://www.docker.com/) - Needed for this setup. Great for quickly spinning up an environment for the server.
 - Linux, Mac or [WSL for Windows](https://learn.microsoft.com/en-us/windows/wsl/install) - Needed to use bash commands.
 - [Make](https://www.gnu.org/software/make/manual/make.html) - CLI to easily execute scripts given in the `Makefile`.
-- [jq](https://jqlang.org/download/) - CLI for parsing `available_versions.json`.
 
 ## Steps:
 
@@ -42,8 +41,9 @@ Setup includes the following:
 
 - If you want to reset the world, you can run `make clean-world` after exiting `make up`.
 - It is a good idea to backup the `out/world` data incase you want to reload the world again.
+- You can look at MC versions via `make find [Query version]` command or look at [available_versions.csv](./available_versions.csv)
 - Try to `git pull` if the newest server version is not supported.
-    - There is a github action that auto-populates the server versions every 24 hours.
+  - There is a github action that auto-populates the server versions every 24 hours.
 
 ## Extra
 
