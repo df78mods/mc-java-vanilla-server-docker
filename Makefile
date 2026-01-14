@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 
 # Commands where rest of the args is treated as one argument.
-CMDS_ALL_ARGS_IS_ONE_LIST = find setup-env server new-server
+CMDS_ALL_ARGS_IS_ONE_LIST = find setup-env server new-server image
 FIRST_ARG = $(firstword $(MAKECMDGOALS))
 ifeq ($(FIRST_ARG),$(filter $(FIRST_ARG),$(CMDS_ALL_ARGS_IS_ONE_LIST)))
   # use the rest as arguments to supply the cmds.
@@ -31,6 +31,12 @@ up:
 down:
 	docker compose down
 
+build:
+	docker compose build
+
+rebuild:
+	docker compose build --no-cache
+
 # Clear out the 'out' folder. Only keep the gitignore and eula.txt.
 out-clean:
 	mv out/.gitignore .gitignore.out
@@ -49,7 +55,9 @@ image-clean:
 
 server: setup-env up
 
-new-server: out-clean server
+image: setup-env build
+
+new-server: out-clean setup-env rebuild up
 
 clean: down out-clean
 
