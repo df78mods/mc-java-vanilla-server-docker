@@ -4,7 +4,7 @@ services:
     pull_policy: never
     build:
       target: minecraft-server
-      dockerfile: scripts/Dockerfile.alpine
+      dockerfile: scripts/Dockerfile.distroless
       args:
         - JAVA_VERSION=${JAVA_VERSION}
         - SERVER_LINK=${SERVER_LINK}
