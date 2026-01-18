@@ -155,7 +155,7 @@ def addToFile(entries: dict[str, any], fileName = "available_versions.csv") -> N
         fieldNames = modEntry[0].keys()
 
     with open(fileName, "w", newline="") as f:
-        writer = csv.DictWriter(f, delimiter=CSV_DELIM, quotechar=CSV_QUOTE, quoting=csv.QUOTE_NONE, fieldnames=fieldNames)
+        writer = csv.DictWriter(f, delimiter=CSV_DELIM, quotechar=CSV_QUOTE, lineterminator='\n', quoting=csv.QUOTE_NONE, fieldnames=fieldNames)
         writer.writeheader()
         writer.writerows(modEntry)
 
