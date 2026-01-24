@@ -86,9 +86,9 @@ Currently there are two dockerfiles available for setup. They have extensions us
 |C Library|musl libc|glibc|
 |Final Image Size|smaller|small|
 
-Distroless: A debian-based image that mostly has the files needed to run the minecraft server.
+Distroless: A custom-made image that mostly has the files needed to run the minecraft server.
 * Bigger image due to `glibc` and JRE being compiled with `glibc`.
-* More common C library used and more cross-platform support.
+* Custom made from extracting files from `.deb` files.
 
 Alpine: Its own linux distribution designed with a small image in mind.
 * Uses `musl C` which uses less memory footprint but potentially less features that can support.

@@ -8,58 +8,42 @@ RUN ./setup.sh
 
 # Start of the build base that installs all needed libraries to prepare final image.
 FROM debian:stable-slim AS build-base
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    ca-certificates \
-    libudev-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt
+COPY ./scripts/install_base.sh /opt/install.sh
+RUN ./install.sh
 
-# Stage to setup user permissions for the final container.
-FROM build-base AS libs-base
+# Stage to setup user permissions and home directory for the final container.
+# Done to prevent bind volume permission issues.
+FROM build-base AS user-base
 ARG UNAME=root
 ARG GNAME=root
 ARG UID=1000
 ARG GID=1000
 
-# Create a group and a system user in a single RUN instruction to reduce image layers
 RUN groupadd -f -g ${GID} ${GNAME} && \
     useradd -o -u ${UID} -g ${GNAME} -s /sbin/nologin ${UNAME} && \
-    mkdir -p /home/${UNAME} && \
-    chown -R ${UID}:${GID} /home/${UNAME}
+    mkdir -p ./root/home/${UNAME} && \
+    chown -R ${UID}:${GID} ./root/home/${UNAME} && \
+    mv /etc/passwd /etc/group ./root/etc/
 
 # Separate stage that downloads the "server.jar" file.
 FROM build-base AS server-download
+RUN apt-get install -y --no-install-recommends \
+    wget \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 ARG SERVER_LINK
 RUN wget -O /home/server.jar $SERVER_LINK
 
 # The image that will be used to host the container.
-FROM gcr.io/distroless/base-nossl-debian13:latest AS server-base
-
-# Copy unix permissions to mimic current user permissions.
-# Done to prevent bind volume permission issues.
-COPY --from=libs-base \
-    /etc/passwd \
-    /etc/group \
-    /etc/
+FROM scratch AS server-base
+COPY --from=user-base /opt/root /
 
 ENV JAVA_HOME=/usr/local
 COPY --from=jre-dev /home/jre $JAVA_HOME
 
-# Load the udev libraries for server to use.
-COPY --from=libs-base /usr/lib/x86_64-linux-gnu/libudev.s* \
-    /usr/lib/x86_64-linux-gnu/libpsx* \
-    /usr/lib/x86_64-linux-gnu/libcap* \
-    /usr/lib/x86_64-linux-gnu/
-
-# Copy copyright licenses to distroless image.
-COPY --from=libs-base \
-    /usr/share/doc/libcap-dev \
-    /usr/share/doc/libudev-dev \
-    /usr/share/doc/
-
 ARG UNAME=root
-COPY --from=libs-base /home/${UNAME} /home/${UNAME}
 USER ${UNAME}
 WORKDIR /home/${UNAME}
 
