@@ -24,7 +24,8 @@ RUN groupadd -f -g ${GID} ${GNAME} && \
     useradd -o -u ${UID} -g ${GNAME} -s /sbin/nologin ${UNAME} && \
     mkdir -p ./root/home/${UNAME} && \
     chown -R ${UID}:${GID} ./root/home/${UNAME} && \
-    mv /etc/passwd /etc/group ./root/etc/
+    echo "${UNAME}:x:${UID}:${GID}::/home/${UNAME}:/sbin/nologin" > ./root/etc/passwd && \
+    echo "${GNAME}:x:${GID}:" > ./root/etc/group
 
 # Separate stage that downloads the "server.jar" file.
 FROM build-base AS server-download
