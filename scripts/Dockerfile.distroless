@@ -15,8 +15,8 @@ RUN ./install.sh
 # Stage to setup user permissions and home directory for the final container.
 # Done to prevent bind volume permission issues.
 FROM build-base AS user-base
-ARG UNAME=root
-ARG GNAME=root
+ARG UNAME=user
+ARG GNAME=user
 ARG UID=1000
 ARG GID=1000
 
@@ -43,7 +43,7 @@ COPY --from=user-base /opt/root /
 ENV JAVA_HOME=/usr/local
 COPY --from=jre-dev /home/jre $JAVA_HOME
 
-ARG UNAME=root
+ARG UNAME=user
 USER ${UNAME}
 WORKDIR /home/${UNAME}
 

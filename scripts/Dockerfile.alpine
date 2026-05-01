@@ -22,8 +22,8 @@ RUN apk add --no-cache \
 ENV JAVA_HOME=/usr/local
 COPY --from=jre-dev /home/jre $JAVA_HOME
 
-ARG UNAME=root
-ARG GNAME=root
+ARG UNAME=user
+ARG GNAME=user
 ARG UID=1000
 ARG GID=1000
 
@@ -36,7 +36,7 @@ FROM server-base AS minecraft-server
 ARG SERVER_LINK
 RUN wget -O /home/server.jar $SERVER_LINK
 
-ARG UNAME=root
+ARG UNAME=user
 USER ${UNAME}
 
 CMD ["java", "-jar", "/home/server.jar", "--nogui"]
@@ -45,7 +45,7 @@ CMD ["java", "-jar", "/home/server.jar", "--nogui"]
 # You should bind the "server.jar" file to "/home/server.jar" if using this stage.
 # This stage is for experimental purposes.
 FROM server-base AS env-base
-ARG UNAME=root
+ARG UNAME=user
 USER ${UNAME}
 
 CMD ["java", "-jar", "/home/server.jar", "--nogui"]
