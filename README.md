@@ -46,6 +46,7 @@ Note: Command `make image [MC Version]` does steps 1 and 2 in one go.
 - You can then `make up` later if you want to start the server up again.
 - JVM arguments can be set in [docker-compose.yaml](./docker-compose.yaml) file in the `command` line.
 - The server files will be populated in the `out` folder so that users can access them and backup anytime.
+  - The `out` folder will initially not be there. It Will be created before the server runs.
 - `make server` is only needed when you want to host a different version or initial setup.
 - If you want to always have a clean server setup, run `make new-server [MC version]`
 
@@ -132,7 +133,7 @@ All the commands grouped by intended functionality. Replace `[MC Version]` with 
 ## Cleanup Commands:
 
 - `make down` - Close the server.
-- `make out-clean` - Clears the `out` folder leaving the eula and the `.gitignore` in place.
+- `make out-clean` - Clears the `out` folder leaving the `eula.txt` in place if it exists.
 - `make clean` Does `make down` and then `make out-world`.
 - `make reset` Cleans the project up. Only really use if no longer using this repository.
 

@@ -13,6 +13,7 @@ endif
 
 IMAGE_NAME = minecraft.vanilla.server
 IMAGES := $(shell docker images --filter "reference=$(IMAGE_NAME):*" -q | tr '\n' ' ')
+OUT_DIR = out
 
 .SILENT: setup-env out-clean find
 
@@ -20,12 +21,14 @@ find:
 	./scripts/find_versions.sh "$(RUN_ARGS)"
 
 agree-eula:
-	echo "eula=TRUE" > out/eula.txt
+	@mkdir -p $(OUT_DIR)
+	echo "eula=TRUE" > $(OUT_DIR)/eula.txt
 
 setup-env:
 	./scripts/setup_mc_env.sh -img $(IMAGE_NAME) -mcv "$(RUN_ARGS)"
 
 up:
+	@mkdir -p $(OUT_DIR)
 	docker compose up -d && docker compose attach mc-server
 
 down:
@@ -37,17 +40,15 @@ build:
 rebuild:
 	docker compose build --no-cache
 
-# Clear out the 'out' folder. Only keep the gitignore and eula.txt.
+# Clear out the OUT_DIR folder. Only keep the eula.txt if exists.
 out-clean:
-	mv out/.gitignore .gitignore.out
-	if [[ -f "out/eula.txt" ]]; then
-		mv out/eula.txt eula.out
+	mkdir -p $(OUT_DIR)
+	if [[ -f "$(OUT_DIR)/eula.txt" ]]; then
+		mv $(OUT_DIR)/eula.txt eula.out
 	fi
-	rm -rf out/
-	mkdir out
-	mv .gitignore.out out/.gitignore
+	rm -rf $(OUT_DIR)/{*,.*}
 	if [[ -f eula.out ]]; then
-		mv eula.out out/eula.txt
+		mv eula.out $(OUT_DIR)/eula.txt
 	fi
 
 image-clean:
