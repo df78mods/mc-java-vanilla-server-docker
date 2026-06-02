@@ -2,7 +2,7 @@
 
 # Make the "." not a wildcard and be the value "." to search.
 FIRST_ARG="${1//./\\\.}"
-ALL_MCVERSIONS=$(tail -n +2 available_versions.csv | awk -F'|' '{print $1}' | tac)
+ALL_MCVERSIONS=$(tail -n +2 scripts/available_versions.csv | awk -F'|' '{print $1}' | tac)
 
 if [[ "$FIRST_ARG" == "" ]]; then
 	echo -e "$ALL_MCVERSIONS"

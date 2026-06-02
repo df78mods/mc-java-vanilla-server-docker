@@ -53,7 +53,7 @@ Note: Command `make image [MC Version]` does steps 1 and 2 in one go.
 ## Notes
 
 - It is a good idea to backup the `out/world` data incase you want to reload the world again.
-- You can look at MC versions via `make find [Query version]` command or look at [available_versions.csv](./available_versions.csv)
+- You can look at MC versions via `make find [Query version]` command or look at [scripts/available_versions.csv](./scripts/available_versions.csv)
 - Try to `git pull` if the newest server version is not supported.
   - There is a github action that auto-populates the server versions every 24 hours.
 - Currently the docker setup does not support showing the GUI app generated from `server.jar`, so including `--nogui` after the jar file path is crucial.

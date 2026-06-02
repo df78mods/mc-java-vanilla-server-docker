@@ -11,6 +11,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 
+CSV_VERSIONS_FILENAME = "scripts/available_versions.csv"
 MOJANG_MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
 CSV_DELIM = '|'
 CSV_QUOTE = '"'
@@ -35,13 +36,13 @@ def getJson(url: str) -> dict[str, any]:
 
 def getExistingEntries() -> dict[str, dict[str, any]]:
     """
-    Get the dict form of the existing entry from "available_versions.csv".
+    Get the dict form of the existing entry from CSV_VERSIONS_FILENAME.
 
     Returns:
         dict (dict[str, dict[str, any]]): The result in Python Dict form.
     """
     existsLink = {}
-    with open("available_versions.csv", "r", newline="") as f:
+    with open(CSV_VERSIONS_FILENAME, "r", newline="") as f:
         reader = csv.DictReader(f, delimiter=CSV_DELIM, quotechar=CSV_QUOTE, quoting=csv.QUOTE_NONE)
         for entry in reader:
             try:
@@ -59,10 +60,10 @@ def getExistingEntries() -> dict[str, dict[str, any]]:
 def getAllMissingVanillaMetaDataJSON(excluded: dict[str, any]) -> dict[str, str]:
     """
     Fetch all of Mojang's MC versions. Attempt to exclude existing entries.
-    
+
     Args:
         excluded (dict[str, str]): The dict to exclude. The key of the dict is the important bit.
-    
+
     Returns:
         dict (dict[str, str]): The dict with the version as the key and the url to the manifest json for the respective version.
     """
@@ -79,13 +80,13 @@ def getAllMissingVanillaMetaDataJSON(excluded: dict[str, any]) -> dict[str, str]
             break
 
         includedMetaDataUrls[key] = version["url"]
-    
+
     return includedMetaDataUrls
 
 def fetchRequiredMetaData(url: str) -> dict[str, any]:
     """
     Use the url that ideally fetches the manifest data for the minecraft version.
-    
+
     Args:
         url (str): The URL to fetch data from.
 
@@ -94,23 +95,23 @@ def fetchRequiredMetaData(url: str) -> dict[str, any]:
     """
     metadata = getJson(url)
     result = {}
-    
+
     for key in ["downloads", "javaVersion"]:
         if key not in metadata:
             return {}
-        
+
     if "server" in metadata["downloads"]:
         result["url"] = metadata["downloads"]["server"]["url"]
-    
+
     if "majorVersion" in metadata["javaVersion"]:
         result["jmav"] = metadata["javaVersion"]["majorVersion"]
-    
+
     return result
 
 def getMissingEntries(items: dict[str, str]) -> dict[str, any]:
     """
     Using the argument, get the appropriate manifest entries and return the dict.
-    
+
     Args:
         items (dict[str, str]): The items consisting of the version as the key and the manifest url as the value.
 
@@ -123,7 +124,7 @@ def getMissingEntries(items: dict[str, str]) -> dict[str, any]:
         metadata = fetchRequiredMetaData(url)
         if len(metadata.keys()) == 2:
             result[version] = metadata
-    
+
     # Logging purposes.
     if len(result) > 0:
         logging.info("Missing Entries List:")
@@ -134,10 +135,10 @@ def getMissingEntries(items: dict[str, str]) -> dict[str, any]:
 
     return result
 
-def addToFile(entries: dict[str, any], fileName = "available_versions.csv") -> None:
+def addToFile(entries: dict[str, any], fileName = CSV_VERSIONS_FILENAME) -> None:
     """
     Add all the entry to the new file.
-    
+
     Args:
         entries (dict[str, any]): The Python dict format of the result. The key is the MC version and the value contains the url and java version.
     """

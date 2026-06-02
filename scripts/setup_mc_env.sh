@@ -28,7 +28,7 @@ while (( $# )); do
 	esac
 done
 
-MCMETADATA=$(tail -n +2 available_versions.csv | grep -m 1 "^${MC_VERSION//./\\\.}$CSV_SEP")
+MCMETADATA=$(tail -n +2 scripts/available_versions.csv | grep -m 1 "^${MC_VERSION//./\\\.}$CSV_SEP")
 
 if [[ $? -ne 0 ]]; then
 	echo "Argument '$MC_VERSION' is NOT a valid version number. Please try a different version."
