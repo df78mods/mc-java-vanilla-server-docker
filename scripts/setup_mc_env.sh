@@ -5,7 +5,7 @@ usage()
 cat << EOF
 Usage: $0 -img IMAGE_NAME -mcv MC_VERSION
 
-This script launches the minecraft server in a docker container.
+This script sets up the minecraft server environment variables for docker to build.
 
 OPTIONS:
    -img IMAGE_NAME  The name of the image to use.
