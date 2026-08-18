@@ -1,0 +1,46 @@
+ARG JAVA_VERSION=8
+
+# Generate the custom JRE as required.
+FROM eclipse-temurin:${JAVA_VERSION}-alpine AS jre-dev
+WORKDIR /home
+
+COPY ./scripts/gen_jre.sh /home/setup.sh
+RUN apk add --no-cache \
+    bash \
+    binutils
+
+SHELL ["/bin/bash"]
+RUN ./setup.sh
+
+# Image that prepares the libraries, files and user permissions to copy over.
+FROM alpine:latest AS build-base
+WORKDIR /opt
+COPY ./scripts/install_base_musl.sh /opt/install.sh
+RUN ./install.sh
+
+# Separate stage that downloads the "server.jar" file.
+FROM alpine:latest AS server-download
+ARG SERVER_LINK
+RUN wget -O /home/server.jar $SERVER_LINK
+
+# The image that will be used to host the container.
+FROM scratch AS server-base
+COPY --from=build-base /opt/root /
+
+ENV JAVA_HOME=/usr/local
+COPY --from=jre-dev /home/jre $JAVA_HOME
+
+# Use non-root user to conform to Principle of Least Privilege (PoLP)
+USER 65532:65532
+WORKDIR /mnt/server-files
+
+# Setup the vanilla minecraft server to be ready to run.
+FROM server-base AS minecraft-server
+COPY --from=server-download /home/server.jar /home/server.jar
+ENTRYPOINT ["java"]
+
+# Only have the environment setup for local downloaded server.
+# You should bind the "server.jar" file to "/home/server.jar" if using this stage.
+# This stage is for experimental purposes.
+FROM server-base AS env-base
+ENTRYPOINT ["java"]

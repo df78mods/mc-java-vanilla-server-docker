@@ -25,7 +25,8 @@ rm -rf $DEBS_DIR
 
 # Prepare the distroless base file system.
 cd ./root
-mkdir -p usr/local/bin etc home
-mkdir -m 777 tmp
+mkdir -p usr/local/bin mnt
+mkdir -m 1777 mnt/server-files
+mkdir -m 1777 tmp
 ln -s usr/lib lib
 ln -s usr/lib64 lib64

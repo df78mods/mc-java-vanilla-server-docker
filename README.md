@@ -66,6 +66,8 @@ WARNING: Not for those new to docker.
 
 There is a build stage where only the JRE environment is made without downloading the server. Can be great for trying out other modded servers.
 
+Note the instructions makes use of [Makefile](./Makefile) commands.
+
 You can start up an instance by going to the existing [docker-compose.yaml](./docker-compose.yaml) and change the following:
 1. Change the `target` value in `build` from `minecraft-server` to `env-base`.
 2. Run `make image [MC Version]` to build env-base image. Excludes downloading the `server.jar` file.
@@ -75,27 +77,15 @@ You can start up an instance by going to the existing [docker-compose.yaml](./do
 
 Disclaimer: Modded servers are not guaranteed to work with this setup as they may need extra JRE modules.
 
-### Alpine vs Distroless
+### Different C Libraries
 
-Currently there are two dockerfiles available for setup. They have extensions using image base.
+Currently there are two dockerfiles available for setup. They have extensions based on C library names.
 
-|Image Base|alpine|distroless|
-|:-|:--:|:--:|
-|Distribution|alpine|debian|
-|C Library|musl libc|glibc|
-|Final Image Size|smaller|small|
+Supported C libraries:
+* [glibc](https://sourceware.org/glibc/)
+* [musl](https://musl.libc.org/)
 
-Distroless: A custom-made image that mostly has the files needed to run the minecraft server.
-* Bigger image due to `glibc` and JRE being compiled with `glibc`.
-* Custom made from extracting files from `.deb` files.
-
-Alpine: Its own linux distribution designed with a small image in mind.
-* Uses `musl C` which uses less memory footprint but potentially less features that can support.
-
-The `distroless` dockerfile setup is selected as default due to the `glibc` which is more commonly used.
-
-If you want to try alpine, just go to the line where `dockerfile:` is located in [docker-compose.yaml](./docker-compose.yaml) and change the extension from `distroless` to `alpine`.
-
+If you want to try musl, just go to the line where `dockerfile:` is located in [docker-compose.yaml](./docker-compose.yaml) and change the extension from `glibc` to `musl`.
 
 # Credits
 
