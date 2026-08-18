@@ -9,23 +9,8 @@ RUN ./setup.sh
 # Start of the build base that installs all needed libraries to prepare final image.
 FROM debian:stable-slim AS build-base
 WORKDIR /opt
-COPY ./scripts/install_base.sh /opt/install.sh
+COPY ./scripts/install_base_glibc.sh /opt/install.sh
 RUN ./install.sh
-
-# Stage to setup user permissions and home directory for the final container.
-# Done to prevent bind volume permission issues.
-FROM build-base AS user-base
-ARG UNAME=user
-ARG GNAME=user
-ARG UID=1000
-ARG GID=1000
-
-RUN groupadd -f -g ${GID} ${GNAME} && \
-    useradd -o -u ${UID} -g ${GNAME} -s /sbin/nologin ${UNAME} && \
-    mkdir -p ./root/home/${UNAME} && \
-    chown -R ${UID}:${GID} ./root/home/${UNAME} && \
-    echo "${UNAME}:x:${UID}:${GID}::/home/${UNAME}:/sbin/nologin" > ./root/etc/passwd && \
-    echo "${GNAME}:x:${GID}:" > ./root/etc/group
 
 # Separate stage that downloads the "server.jar" file.
 FROM build-base AS server-download
@@ -39,14 +24,14 @@ RUN wget -O /home/server.jar $SERVER_LINK
 
 # The image that will be used to host the container.
 FROM scratch AS server-base
-COPY --from=user-base /opt/root /
+COPY --from=build-base /opt/root /
 
 ENV JAVA_HOME=/usr/local
 COPY --from=jre-dev /home/jre $JAVA_HOME
 
-ARG UNAME=user
-USER ${UNAME}
-WORKDIR /home/${UNAME}
+# Use non-root user to conform to Principle of Least Privilege (PoLP)
+USER 65532:65532
+WORKDIR /mnt/server-files
 
 # Setup the vanilla minecraft server to be ready to run.
 FROM server-base AS minecraft-server

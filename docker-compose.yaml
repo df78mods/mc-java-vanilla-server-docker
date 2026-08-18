@@ -4,17 +4,14 @@ services:
     pull_policy: never
     build:
       target: minecraft-server
-      dockerfile: scripts/Dockerfile.distroless
+      dockerfile: scripts/Dockerfile.glibc
       args:
         - JAVA_VERSION=${JAVA_VERSION}
         - SERVER_LINK=${SERVER_LINK}
-        - UNAME=${USER}
-        - GNAME=${USER}
-        - UID=${UID}
-        - GID=${GID}
     stdin_open: true
+    user: ${UID:-65532}:${GID:-65532}
     volumes:
-      - ./out:/home/${USER}/
+      - ./out:/mnt/server-files/
       #- ./server.jar:/home/server.jar
     tty: true
     ports:
