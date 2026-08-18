@@ -53,7 +53,7 @@ docker rmi $IMAGES
 
 cleanContainer()
 {
-docker compose down
+docker compose down 2> /dev/null
 }
 
 listMcVersions()

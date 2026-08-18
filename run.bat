@@ -117,7 +117,7 @@ docker rmi %IMAGE_LIST%
 EXIT /B
 
 :clean-container
-docker compose down
+docker compose down 2>NUL
 EXIT /B
 
 :list-mc-versions
