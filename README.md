@@ -11,49 +11,47 @@ Setup includes the following:
 
 - [Docker](https://www.docker.com/) - Needed for this setup. Great for quickly spinning up an environment for the server.
 - Linux, Mac or [WSL for Windows](https://learn.microsoft.com/en-us/windows/wsl/install) - Needed to use bash commands.
+
+Optional:
 - [Make](https://www.gnu.org/software/make/manual/make.html) - CLI to easily execute scripts given in the [Makefile](./Makefile).
 
 ## Steps:
 
-### Compulsory first step:
+Note: Main scripts will have you agree to [Minecraft's EULA](https://aka.ms/MinecraftEULA).
 
-Read [Minecraft's EULA](https://aka.ms/MinecraftEULA) and if you agree, run the convenient `make agree-eula` command.
+### Scripts:
 
-All command references are found [here](#makefile-command-references), refer there for information about each command listed.
+* Windows: Execute the file [run.bat](./run.bat)
+* Mac/Linux: Execute the file [run.sh](./run.sh) in terminal.
 
 ### Starting up the MC server right away for the first time:
 
+Each scripts have their dedicated `help` commands. Makefile has the `make help` command for their equivalents.
+
+#### Scripts
+
+1. Use the command `server` and then type your desired Minecraft version.
+
+Re-running the same server again command is `run-server`.
+
+#### Makefile
+
 1. Run the command `make server [MC version]` to start your new minecraft server instance.
 
-### Manual setup:
-
-1. Run `make setup-env [MC Version]`.
-
-2. Build the image that uses the setup env variables via command:
-
-- `make build`
-- `make rebuild`
-
-3. Run `make up` to start the minecraft instance.
-
-Note: Command `make image [MC Version]` does steps 1 and 2 in one go.
+Re-running the same server again command is `make up`
 
 ## Post setup:
 
 - You will be given direct access to the server CLI.
   - Enter command `stop` in the server CLI to close the server. Recommended for graceful exit.
   - You can alternatively use `Ctrl-C` but generally not recommended.
-- You can then `make up` later if you want to start the server up again.
 - JVM arguments can be set in [docker-compose.yaml](./docker-compose.yaml) file in the `command` line.
 - The server files will be populated in the `out` folder so that users can access them and backup anytime.
-  - The `out` folder will initially not be there. It Will be created before the server runs.
-- `make server` is only needed when you want to host a different version or initial setup.
-- If you want to always have a clean server setup, run `make new-server [MC version]`
+  - The `out` folder will initially not be there. It will be created before the server runs.
 
 ## Notes
 
 - It is a good idea to backup the `out/world` data incase you want to reload the world again.
-- You can look at MC versions via `make find [Query version]` command or look at [scripts/available_versions.csv](./scripts/available_versions.csv)
 - Try to `git pull` if the newest server version is not supported.
   - There is a github action that auto-populates the server versions every 24 hours.
 - Currently the docker setup does not support showing the GUI app generated from `server.jar`, so including `--nogui` after the jar file path is crucial.
@@ -98,48 +96,6 @@ The `distroless` dockerfile setup is selected as default due to the `glibc` whic
 
 If you want to try alpine, just go to the line where `dockerfile:` is located in [docker-compose.yaml](./docker-compose.yaml) and change the extension from `distroless` to `alpine`.
 
-# Makefile Command References:
-
-All the commands grouped by intended functionality. Replace `[MC Version]` with your desired minecraft version.
-
-## Setup Commands:
-
-- `make agree-eula` - Inserts the `eula.txt` file indicating you agree to the terms.
-- `make find [Query]` - Search versions with matching `[Query]` that are available to use in place of `[MC Version]`.
-- `make setup-env [MC Version]` - Sets up environment variables for [docker-compose.yaml](./docker-compose.yaml) to refer to.
-
-## Build Commands:
-
-1. Do `make setup-env` before doing the following commands:
-
-- `make build` - Builds the image using cached layers when possible to save time.
-- `make rebuild` - Builds the image from scratch regardless of presence of cached layers.
-
-2. Bundled commands that you can run standalone:
-
-- `make image [MC Version]` - Runs `make setup-env [MC Version]` and then `make build`.
-
-## Launch Commands:
-
-1. Do `make setup-env` before doing the following commands:
-
-- `make up` - Launches the container based on the `.env` file. Skips rebuilding image if it exists.
-
-2. Bundled commands that you can run standalone:
-
-- `make server [MC Version]` - Runs `make setup-env [MC Version]` and then `make up`.
-- `make new-server [MC Version]` - Starts up a new instance from fresh image build.
-
-## Cleanup Commands:
-
-- `make down` - Close the server.
-- `make out-clean` - Clears the `out` folder leaving the `eula.txt` in place if it exists.
-- `make clean` Does `make down` and then `make out-world`.
-- `make reset` Cleans the project up. Only really use if no longer using this repository.
-
-Surplus:
-
-- `make image-clean` - Clears the images made in this project assuming tag base names have not changed.
 
 # Credits
 

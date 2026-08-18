@@ -15,7 +15,37 @@ IMAGE_NAME = minecraft.vanilla.server
 IMAGES := $(shell docker images --filter "reference=$(IMAGE_NAME):*" -q | tr '\n' ' ')
 OUT_DIR = out
 
-.SILENT: setup-env out-clean find
+.SILENT: setup-env out-clean find help
+
+help:
+	if [[ ! -f "$(OUT_DIR)/eula.txt" ]]; then
+		echo 'Minecraft EULA Link: https://aka.ms/MinecraftEULA'
+		echo 'Agree to the Minecraft EULA by typing `make agree-eula` command.'
+	fi
+	echo 'All the commands grouped by intended functionality. Replace `[MC Version]` with your desired minecraft version.'
+	echo ''
+
+	echo 'Setup Commands:'
+	echo 'make agree-eula - Inserts the `eula.txt` file indicating you agree to the terms.'
+	echo 'make find [Query] - Search versions with matching `[Query]` that are available to use in place of `[MC Version]`.'
+	echo 'make setup-env [MC Version] - Sets up environment variables for docker-compose.yaml to refer to.'
+	echo ''
+
+	echo 'Launch Commands:'
+	echo 'make server [MC Version] - Runs `make setup-env [MC Version]` and then `make up`.'
+	echo 'make new-server [MC Version] - Starts up a new instance from fresh image build.'
+	echo ''
+	echo 'Note: Do `make setup-env` before doing the following command listed below.'
+	echo 'make up - Launches the container based on the `.env` file. Skips rebuilding image if it exists.'
+	echo ''
+
+	echo 'Cleanup Commands:'
+	echo 'make down - Close the server.'
+	echo 'make out-clean - Clears the `out` folder leaving the `eula.txt` in place if it exists.'
+	echo 'make clean - Does `make down` and then `make out-world`.'
+	echo 'make reset - Cleans the project up. Only really use if no longer using this repository.'
+	echo 'make image-clean - Clears the images made in this project assuming tag base names have not changed.'
+	echo ''
 
 find:
 	./scripts/find_versions.sh "$(RUN_ARGS)"
