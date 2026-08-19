@@ -61,11 +61,6 @@ ECHO SERVER_LINK=%SERVER_LINK%>> .env
 ECHO MC_VERSION=%MC_VERSION%>> .env
 
 ENDLOCAL
-
-:: Windows users do not worry about linux permissions so is hard coded.
-ECHO USER=user>> .env
-ECHO GID=1000>> .env
-ECHO UID=1000>> .env
 EXIT /B 0
 
 :help-text
