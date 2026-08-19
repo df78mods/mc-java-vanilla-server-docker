@@ -34,7 +34,7 @@ FOR %%X IN (%*) DO (
 )
 
 IF NOT DEFINED MC_VERSION (
-	CALL :help-text
+	ECHO "Argument '' is NOT a valid version number. Please try a different version."
 	EXIT /B 1
 )
 
