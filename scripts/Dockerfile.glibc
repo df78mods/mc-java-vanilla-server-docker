@@ -6,8 +6,11 @@ WORKDIR /home
 COPY ./scripts/gen_jre.sh /home/setup.sh
 RUN ./setup.sh
 
+FROM debian:stable-slim AS updated-apts
+RUN apt-get update
+
 # Start of the build base that installs all needed libraries to prepare final image.
-FROM debian:stable-slim AS build-base
+FROM updated-apts AS build-base
 ARG MINECRAFT_EULA
 ENV MINECRAFT_EULA ${MINECRAFT_EULA}
 WORKDIR /opt
@@ -15,7 +18,7 @@ COPY ./scripts/install_base_glibc.sh /opt/install.sh
 RUN ./install.sh
 
 # Separate stage that downloads the "server.jar" file.
-FROM build-base AS server-download
+FROM updated-apts AS server-download
 RUN apt-get install -y --no-install-recommends \
     wget \
     ca-certificates \

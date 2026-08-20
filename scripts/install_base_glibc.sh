@@ -1,7 +1,5 @@
 #!/bin/bash
 
-apt-get update
-
 DEBS_DIR=debs
 INSTALL_DIR=insdir
 mkdir $INSTALL_DIR $DEBS_DIR root
