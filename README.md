@@ -53,6 +53,7 @@ Re-running the same server again command is `make up`
 
 - It is a good idea to backup the `out/world` data incase you want to reload the world again.
 - Try to `git pull` if the newest server version is not supported.
+- Type `git clean -fd` to restore the project after tinkering. Does not remove contents from `out` directory.
   - There is a github action that auto-populates the server versions every 24 hours.
 - Currently the docker setup does not support showing the GUI app generated from `server.jar`, so including `--nogui` after the jar file path is crucial.
   - Currently no plan to adding GUI support to containers due to current complexity.
@@ -86,6 +87,36 @@ Supported C libraries:
 * [musl](https://musl.libc.org/)
 
 If you want to try musl, just go to the line where `dockerfile:` is located in [docker-compose.yaml](./docker-compose.yaml) and change the extension from `glibc` to `musl`.
+
+### Image Without a Mount
+
+Currently the image build can support standalone setup without any binding but is recommended to use the current docker compose setup as the mount setup is good in general use cases.
+
+This setup as a hobby project to get to know docker more.
+
+#### Pre-setup:
+
+1. Generate the `.env` file using the convenient `make setup-env [MC_VERSION]`
+
+Preparing the setup for building a standalone image:
+
+In the [docker-compose.yaml](./docker-compose.yaml) file:
+1. Uncomment the line where it says `MINECRAFT_EULA=TRUE`.
+2. Comment the line where it says `- ./out:/mnt/server-files/${UID:-65532}_${GID:-65532}`.
+
+Extra step for linux/mac users: Remove the variables `UID` and `GID` from the generated `.env` file.
+
+#### Build Phase:
+
+1. Run `docker compose build` to build the image.
+
+The name of the image shown in the output should look something like `minecraft.vanilla.server:1.21.11` assuming `1.21.11` is the `MC_VERSION` chosen.
+
+2. You can run the standalone container via the command:
+```bash
+docker run --rm -it -p 25565:25565 IMAGE_NAME
+```
+Replacing `IMAGE_NAME` with the name of the generated image.
 
 # Credits
 
