@@ -8,6 +8,8 @@ RUN ./setup.sh
 
 # Start of the build base that installs all needed libraries to prepare final image.
 FROM debian:stable-slim AS build-base
+ARG MINECRAFT_EULA
+ENV MINECRAFT_EULA ${MINECRAFT_EULA}
 WORKDIR /opt
 COPY ./scripts/install_base_glibc.sh /opt/install.sh
 RUN ./install.sh
@@ -31,12 +33,14 @@ COPY --from=jre-dev /home/jre $JAVA_HOME
 
 # Use non-root user to conform to Principle of Least Privilege (PoLP)
 USER 65532:65532
-WORKDIR /mnt/server-files
+WORKDIR /mnt/server-files/65532_65532
 
 # Setup the vanilla minecraft server to be ready to run.
 FROM server-base AS minecraft-server
 COPY --from=server-download /home/server.jar /home/server.jar
+EXPOSE 25565
 ENTRYPOINT ["java"]
+CMD ["-jar", "/home/server.jar", "--nogui"]
 
 # Only have the environment setup for local downloaded server.
 # You should bind the "server.jar" file to "/home/server.jar" if using this stage.
