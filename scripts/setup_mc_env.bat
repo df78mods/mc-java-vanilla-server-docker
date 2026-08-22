@@ -60,6 +60,23 @@ ECHO IMAGE_NAME=%IMAGE_NAME%>> .env
 ECHO SERVER_LINK=%SERVER_LINK%>> .env
 ECHO MC_VERSION=%MC_VERSION%>> .env
 
+IF EXIST clib.env (
+	FOR /F "usebackq delims== tokens=1*" %%A IN ("clib.env") DO (
+		IF "%%~A" NEQ "" (
+			SET NEXT_CLIB_ENV_KEY=%%~A
+		)
+
+		IF DEFINED NEXT_CLIB_ENV_KEY (
+			SET "!NEXT_CLIB_ENV_KEY!=%%~B"
+			SET "NEXT_CLIB_ENV_KEY="
+		)
+	)
+
+	IF DEFINED C_LIB (
+		echo C_LIB=!C_LIB!>> .env
+	)
+)
+
 ENDLOCAL
 EXIT /B 0
 

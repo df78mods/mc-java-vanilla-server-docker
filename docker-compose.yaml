@@ -1,10 +1,10 @@
 services:
   mc-server:
-    image: ${IMAGE_NAME}:${MC_VERSION}
+    image: ${IMAGE_NAME}:${C_LIB:-glibc}-${MC_VERSION}
     pull_policy: never
     build:
       target: minecraft-server
-      dockerfile: scripts/Dockerfile.glibc
+      dockerfile: scripts/Dockerfile.${C_LIB:-glibc}
       sbom: true
       provenance: mode=max
       args:

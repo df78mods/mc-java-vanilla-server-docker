@@ -86,7 +86,13 @@ Supported C libraries:
 * [glibc](https://sourceware.org/glibc/)
 * [musl](https://musl.libc.org/)
 
-If you want to try musl, just go to the line where `dockerfile:` is located in [docker-compose.yaml](./docker-compose.yaml) and change the extension from `glibc` to `musl`.
+If you want to try musl, just create a file with the filename `clib.env` in this project directory and then paste the following text to the file:
+```env
+C_LIB=musl
+```
+You can later either remove the file or change the value from `musl` to `glibc` if you want to go back to using `glibc`.
+
+`musl` is only there for experimental purposes, `glibc` is recommended due to it being more fit for purpose for running minecraft servers and is the reason why it's currently set as the default in the docker-compose file.
 
 ### Image Without a Mount
 
@@ -110,7 +116,7 @@ Extra step for linux/mac users: Remove the variables `UID` and `GID` from the ge
 
 1. Run `docker compose build` to build the image.
 
-The name of the image shown in the output should look something like `minecraft.vanilla.server:1.21.11` assuming `1.21.11` is the `MC_VERSION` chosen.
+The name of the image shown in the output should look something like `minecraft.vanilla.server:glibc-1.21.11` assuming `1.21.11` is the `MC_VERSION` chosen.
 
 2. You can run the standalone container via the command:
 ```bash
