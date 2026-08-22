@@ -28,3 +28,12 @@ ln -s usr/lib64 lib64
 
 cp -r /lib/*musl* usr/lib/
 cp -r /usr/lib/libudev* usr/lib/
+
+# Generate OS Release file.
+source /etc/os-release
+cat << EOF > etc/os-release
+NAME=$NAME
+VERSION_ID=$VERSION_ID
+ID=$ID
+PRETTY_NAME=Distroless
+EOF
