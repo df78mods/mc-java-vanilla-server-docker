@@ -46,3 +46,8 @@ echo "SERVER_LINK=$SERVER_LINK" >> .env
 echo "MC_VERSION=${MC_VERSION// /_}" >> .env
 echo "GID=$GROUP_ID" >> .env
 echo "UID=$USER_ID" >> .env
+
+if [ -f clib.env ]; then
+	source clib.env
+	echo "C_LIB=$C_LIB" >> .env
+fi
