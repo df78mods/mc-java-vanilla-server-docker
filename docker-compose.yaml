@@ -5,6 +5,8 @@ services:
     build:
       target: minecraft-server
       dockerfile: scripts/Dockerfile.glibc
+      sbom: true
+      provenance: mode=max
       args:
         - JAVA_VERSION=${JAVA_VERSION}
         - SERVER_LINK=${SERVER_LINK}
