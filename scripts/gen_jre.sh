@@ -9,7 +9,14 @@ if [[ -z "$jlinkPath" ]]; then
 		exit 0
 	fi
 	exit 1
-else
-	modules=java.base,java.desktop,java.management,java.naming,java.sql,java.xml,jdk.crypto.cryptoki,jdk.unsupported,jdk.zipfs
-	jlink --add-modules $modules --output jre --no-header-files --no-man-pages --strip-debug
 fi
+
+javaMajorVersion=$(echo $JAVA_VERSION | grep -Po "jdk-\K[^\.]+")
+compress="--compress=zip-0"
+
+if (( javaMajorVersion < 21 )); then
+	compress="--compress=0"
+fi
+
+modules=java.base,java.desktop,java.management,java.naming,java.sql,java.xml,jdk.crypto.cryptoki,jdk.unsupported,jdk.zipfs
+jlink --add-modules $modules --output jre --no-header-files --no-man-pages --strip-debug $compress
