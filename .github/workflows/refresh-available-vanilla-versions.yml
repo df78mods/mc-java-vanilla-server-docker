@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to run workflow on'
+        description: 'Branch to run workflow on. Leave empty for current branch.'
         required: false
-        default: 'main' # Uses the branch name that triggered the run
+        default: '' # Uses the branch name that triggered the run
+      verbose:
+        description: 'Whether to show debug logs. Set to 1 to enable.'
+        required: false
+        default: '0'
   schedule:
     # Set to run action once a day at 0:00 server time.
     - cron: '0 0 * * *'
@@ -18,39 +22,45 @@ jobs:
       contents: write # Allow pushing to the repository for the action.
     steps:
 
-      # Setup main as default branch if no other branch is supplied.
+      # Setup current branch as default branch if no other branch is supplied.
       - name: Use input or default branch
         run: |
           EVENT_NAME="${{ github.event_name }}"
           if [[ "$EVENT_NAME" = "workflow_dispatch" ]]; then
-            echo "TARGET_BRANCH=${{ inputs.branch }}" >> $GITHUB_ENV
+            echo "TARGET_BRANCH=${{ inputs.branch || github.ref_name }}" >> $GITHUB_ENV
+            if [[ "${{ inputs.verbose }}" = "1" ]]; then
+              echo "PRINT_VERBOSE=${{ inputs.verbose }}" >> $GITHUB_ENV
+            fi
           else
-            echo "TARGET_BRANCH=main" >> $GITHUB_ENV
+            echo "TARGET_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
           fi
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Required for the action to be able to push
           fetch-depth: 0
           # This uses the specific ref (branch/tag/SHA) that the workflow was triggered on
           ref: ${{ env.TARGET_BRANCH }} 
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Golang
+        uses: actions/setup-go@v7
         with:
-          python-version: "3.10"
-          architecture: "x64"
-          cache: pip
-          cache-dependency-path: scripts/python-requirements.txt
+          go-version-file: scripts/go_scripts/go.mod
+          check-latest: false
+          cache: true
+          # No 3rd party libraries used so use go.mod instead of go.sum.
+          cache-dependency-path: scripts/go_scripts/go.mod
 
-      - name: Install required packages
+      - name: Build the scripts
         run: |
-          python -m pip install --upgrade pip
-          pip install -r scripts/python-requirements.txt
+          cd scripts/go_scripts/
+          mkdir -p $HOME/.local/bin/
+          go build -o $HOME/.local/bin/ ./...
+          cd ../../
 
       - name: Execute refresh script
-        run: python scripts/refresh_vanilla_versions.py > pyscript.log
+        run: refresh_versions -src-csv scripts/available_versions.csv ${PRINT_VERBOSE:+--verbose} > refresh_versions.log
 
       - name: Add any changed files
         run: |
@@ -64,7 +74,7 @@ jobs:
             echo "No changes to commit. Skipping push."
             echo "PUSH_NEEDED=false" >> $GITHUB_ENV
           else
-            FORMATTED_VERSIONS="$(grep -Po "Version: \K[^ ]+" pyscript.log | sed 's/^/- /')"
+            FORMATTED_VERSIONS="$(grep -Po " - Version: \K[^\r?\n]+" refresh_versions.log | sed 's/^/- /')"
             VERSION_COUNT=$(echo "${FORMATTED_VERSIONS}" | tr -d -c '\n' | wc -c)
             TITLE="Added new minecraft version"
             if (( $VERSION_COUNT > 1 )); then
@@ -76,14 +86,14 @@ jobs:
             echo "Changes committed. Proceeding with push."
             echo "PUSH_NEEDED=true" >> $GITHUB_ENV
           fi
-          if [ -f "pyscript.log" ] && [ ! -s "pyscript.log" ]; then
+          if [ -f "refresh_versions.log" ] && [ ! -s "refresh_versions.log" ]; then
             echo "Removing empty python output log file."
-            rm pyscript.log
+            rm refresh_versions.log
           fi
 
       - name: Upload surplus log files as an artifact
         if: always() # Run this regardless failed step. May need to get python script failed logs.
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Log Files
           if-no-files-found: ignore
