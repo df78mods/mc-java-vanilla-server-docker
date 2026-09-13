@@ -56,7 +56,7 @@ jobs:
         run: |
           cd scripts/go_scripts/
           mkdir -p $HOME/.local/bin/
-          go build -o $HOME/.local/bin/ ./...
+          go build -buildvcs=false -trimpath -ldflags="-s -w" -o $HOME/.local/bin/ ./...
           cd ../../
 
       - name: Execute refresh script
