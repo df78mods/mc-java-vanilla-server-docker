@@ -15,7 +15,7 @@ RUN ./setup.sh
 # Image that prepares the libraries, files and user permissions to copy over.
 FROM alpine:latest AS build-base
 ARG MINECRAFT_EULA
-ENV MINECRAFT_EULA ${MINECRAFT_EULA}
+ENV MINECRAFT_EULA=${MINECRAFT_EULA}
 WORKDIR /opt
 COPY ./scripts/install_base_musl.sh /opt/install.sh
 RUN ./install.sh

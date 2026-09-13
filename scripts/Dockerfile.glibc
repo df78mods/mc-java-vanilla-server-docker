@@ -12,7 +12,7 @@ RUN apt-get update
 # Start of the build base that installs all needed libraries to prepare final image.
 FROM updated-apts AS build-base
 ARG MINECRAFT_EULA
-ENV MINECRAFT_EULA ${MINECRAFT_EULA}
+ENV MINECRAFT_EULA=${MINECRAFT_EULA}
 WORKDIR /opt
 COPY ./scripts/install_base_glibc.sh /opt/install.sh
 RUN ./install.sh
