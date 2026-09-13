@@ -1,8 +1,8 @@
 package fetch_records
 
 import (
-	"scripts/internal/controllers/fetch_records/models"
-	"scripts/internal/utils/logger"
+	"go_scripts/internal/controllers/fetch_records/models"
+	"go_scripts/internal/utils/logger"
 	"strconv"
 	"time"
 )

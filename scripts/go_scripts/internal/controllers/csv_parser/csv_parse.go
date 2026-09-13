@@ -3,8 +3,8 @@ package csv_parser
 import (
 	"encoding/csv"
 	"errors"
+	"go_scripts/internal/utils/logger"
 	"os"
-	"scripts/internal/utils/logger"
 )
 
 const CSV_COMMA = '|'

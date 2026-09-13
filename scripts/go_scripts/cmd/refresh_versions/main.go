@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
+	"go_scripts/internal/controllers/csv_parser"
+	"go_scripts/internal/controllers/fetch_records"
 	"os"
-	"scripts/internal/controllers/csv_parser"
-	"scripts/internal/controllers/fetch_records"
 )
 
 var csvFilePath string

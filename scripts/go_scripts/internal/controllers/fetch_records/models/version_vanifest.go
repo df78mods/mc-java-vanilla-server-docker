@@ -2,9 +2,9 @@ package models
 
 import (
 	"encoding/json"
+	"go_scripts/internal/utils/logger"
 	"io"
 	"net/http"
-	"scripts/internal/utils/logger"
 )
 
 type VersionSummary struct {
