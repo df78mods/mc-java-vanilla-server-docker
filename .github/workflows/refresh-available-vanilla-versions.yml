@@ -56,7 +56,7 @@ jobs:
         run: |
           cd scripts/go_scripts/
           mkdir -p $HOME/.local/bin/
-          go build -buildvcs=false -trimpath -ldflags="-s -w" -o $HOME/.local/bin/ ./...
+          go build -buildvcs=false -trimpath -ldflags="-s -w" -o $HOME/.local/bin/ ./cmd/refresh_versions/ ./internal/...
           cd ../../
 
       - name: Execute refresh script
@@ -87,7 +87,7 @@ jobs:
             echo "PUSH_NEEDED=true" >> $GITHUB_ENV
           fi
           if [ -f "refresh_versions.log" ] && [ ! -s "refresh_versions.log" ]; then
-            echo "Removing empty python output log file."
+            echo "Removing empty output log file."
             rm refresh_versions.log
           fi
 
